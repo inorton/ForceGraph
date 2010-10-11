@@ -30,22 +30,22 @@ public partial class MainWindow : Gtk.Window
 		Graph.CoulombConstant += 5;
 		Graph.SpringConstant += 5;
 		
-		Node q1 = new Node ();
-		Node q2 = new Node ();
+		Node q1 = new Node (){ Mass = 3 };
+		Node q2 = new Node (){ Mass = 2 };
 		Node q3 = new Node ();
 		Node q4 = new Node ();
 		Node q5 = new Node ();
 		Node q6 = new Node ();
 		Node q7 = new Node ();
 		
-		q1.Charge *= 7;
+		q1.Charge *= 20;
 		q1.Data = new NodeData(){ 
 			Label = "Root CA Key Group",
 			Stroke = new Color( 0.1, 0.1, 0.1, 1.0 ),
 			Fill = new Color( 0.8, 0.0, 0.0, 1.0 ),
 			Size = 30 };
 		
-		q2.Charge *= 3;
+		q2.Charge *= 9;
 		q2.Data = new NodeData(){ 
 			Label = "Root CA App Group",
 			Stroke = new Color( 0.1, 0.1, 0.1, 1.0 ),
@@ -84,17 +84,15 @@ public partial class MainWindow : Gtk.Window
 		t.Start();
 	}
 	
-	public void Render()
+	public void Render ()
 	{
 		do {
-			lock ( area.ForceGraph ){
-				if ( area.ForceGraph.TotalKineticEnergy > 0.0025 ){
-					area.ForceGraph.Compute( null );
+			lock (area.ForceGraph) {
+				if (area.ForceGraph.TotalKineticEnergy > 0.0025) {
+					area.ForceGraph.Compute (null);
 					
-					Application.Invoke( delegate {
-						using ( var ctx = Gdk.CairoHelper.Create( area.GdkWindow ) ){
-							area.DrawGraph( ctx ); 	
-						}
+					Application.Invoke (delegate {
+						area.QueueDraw ();
 					} );
 				}
 			}
@@ -172,7 +170,7 @@ public class CairoGraphic : DrawingArea
     protected override bool OnExposeEvent (Gdk.EventExpose args)
     {
     	using (Context g = Gdk.CairoHelper.Create (args.Window)) {
-			lock ( ForceGraph ){
+    		lock (ForceGraph) {
     			DrawGraph (g);
 			}
 		}
@@ -181,16 +179,18 @@ public class CairoGraphic : DrawingArea
 	
 	public void DrawGraph (Context gr)
 	{
-		int offset = 100;
-		int mag    = 30;
+		int mag = 30;
+		double xoffset = (this.Allocation.Width / 2) - ( 0.5 * ForceGraph.Width );
+		double yoffset = (this.Allocation.Height / 2) - ( 0.5 * ForceGraph.Height );
+		
 		if (ForceGraph != null) {
-			this.GdkWindow.Clear();
+			this.GdkWindow.Clear ();
 			gr.Antialias = Antialias.Subpixel;
 			foreach (var p in ForceGraph.Springs){			
 				gr.LineWidth = 1.5;
 				gr.Color = new Color( 0,0,0,1);
-				gr.MoveTo( offset + ( p.NodeA.Location.X * mag ), offset + ( p.NodeA.Location.Y * mag ) );
-				gr.LineTo( offset + ( p.NodeB.Location.X * mag ), offset + ( p.NodeB.Location.Y * mag ) );
+				gr.MoveTo( xoffset + ( p.NodeA.Location.X * mag ), yoffset + ( p.NodeA.Location.Y * mag ) );
+				gr.LineTo( xoffset + ( p.NodeB.Location.X * mag ), yoffset + ( p.NodeB.Location.Y * mag ) );
 				gr.Stroke();
 				
 			}
@@ -210,8 +210,8 @@ public class CairoGraphic : DrawingArea
 				}
 				
 				DrawFilledCircle (gr, 
-					offset + (mag * n.Location.X),
-					offset + (mag * n.Location.Y),
+					xoffset + (mag * n.Location.X),
+					yoffset + (mag * n.Location.Y),
 					size,
 					stroke,
 					fill
@@ -220,7 +220,7 @@ public class CairoGraphic : DrawingArea
 				if ( nd != null ) {
 					if ( nd.Label != null ){
 						gr.SetFontSize(24);
-						gr.MoveTo( 25 + offset + (mag * n.Location.X), 25 + offset + (mag * n.Location.Y));
+						gr.MoveTo( 25 + xoffset + (mag * n.Location.X), 25 + yoffset + (mag * n.Location.Y));
 						gr.ShowText( nd.Label );						
 					}
 				}

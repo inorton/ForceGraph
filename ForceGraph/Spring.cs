@@ -14,6 +14,7 @@ namespace ForceGraph
 		
 		public Node NodeA { get; set; }
 		public Node NodeB { get; set; }
+		public object Data { get; set; }
 		
 		public Node Other (Node us)
 		{

@@ -14,6 +14,7 @@ namespace ForceGraph
 		public static double RestThreshold = 2; // declare the graph done when TotalKineticEnergy is less than this
 		public static double ComputeTimeStep = 0.1; // iterations per second
 		
+		
 		public Graph ()
 		{
 			nodes = new List<Node> (10);
@@ -24,6 +25,38 @@ namespace ForceGraph
 		public double TotalKineticEnergy {
 			get { return totalKE; } 
 		}
+		
+		private double minX = 0.0;
+		public double MinX {
+			get {
+				return minX;
+			}
+		}
+		
+		private double minY = 0.0;
+		public double MinY {
+			get { return minY; }
+		}
+
+		private double maxX = 0.0;
+		public double MaxX {
+			get { return maxX; }
+		}
+		
+		private double maxY = 0.0;
+		public double MaxY {
+			get { return maxY; }
+		}
+
+
+		public double Width {
+			get { return (maxX - minX); }
+		}
+
+		public double Height {
+			get { return (maxY - minY); }
+		}
+
 		
 		
 		private List<Node> nodes;
@@ -112,6 +145,10 @@ namespace ForceGraph
 					Y = vel.Y * ComputeTimeStep,
 					Z = vel.Z * ComputeTimeStep
 				};
+				if ( x.Location.X < minX ) minX = x.Location.X;
+				if ( x.Location.Y < minY ) minY = x.Location.Y;
+				if ( x.Location.X > maxX ) maxX = x.Location.X;
+				if ( x.Location.Y > maxY ) maxY = x.Location.Y;
 				
 				totalKE += x.Mass * Math.Pow( vel.Length , 2 );
 				
