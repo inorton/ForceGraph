@@ -36,12 +36,14 @@ public partial class MainWindow : Gtk.Window
 		Node q4 = new Node ();
 		Node q5 = new Node ();
 		Node q6 = new Node ();
+		Node q7 = new Node ();
 		
 		q1.Location = new ForceGraph.Point(){ X = 12, Y = 5, Z = 0 };
 		q2.Location = new ForceGraph.Point(){ X = 0, Y = -2, Z = 0 };
 		q3.Location = new ForceGraph.Point(){ X = -4, Y = 13, Z = 5 };
 		q5.Location = new ForceGraph.Point(){ X = 1, Y = 0, Z = 0 };
 		q6.Location = new ForceGraph.Point(){ X = 2, Y = 10, Z = 0 };	
+		q7.Location = new ForceGraph.Point(){ X = 3, Y = -6, Z = 0 };
 		
 		
 		g.AddNode( q1 );			
@@ -50,13 +52,16 @@ public partial class MainWindow : Gtk.Window
 		g.AddNode( q4 );
 		g.AddNode( q5 );
 		g.AddNode( q6 );
+		g.AddNode( q7 );
 		
-		g.Join( q1, q3 );
-		g.Join( q1, q2 );
-		g.Join( q3, q2 );
-		g.Join( q2, q4 );
 		g.Join( q1, q5 );
 		g.Join( q1, q6 );
+		g.Join( q1, q7 );
+		
+		
+		g.Join( q1, q2 ).NaturalLength = 4;
+		g.Join( q2, q3 );
+		g.Join( q2, q4 );
 		
 		area.ForceGraph = g;
 		
