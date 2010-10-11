@@ -38,6 +38,20 @@ public partial class MainWindow : Gtk.Window
 		Node q6 = new Node ();
 		Node q7 = new Node ();
 		
+		q1.Charge *= 7;
+		q1.Data = new NodeData(){ 
+			Label = "Root CA Key Group",
+			Stroke = new Color( 0.1, 0.1, 0.1, 1.0 ),
+			Fill = new Color( 0.8, 0.0, 0.0, 1.0 ),
+			Size = 30 };
+		
+		q2.Charge *= 3;
+		q2.Data = new NodeData(){ 
+			Label = "Root CA App Group",
+			Stroke = new Color( 0.1, 0.1, 0.1, 1.0 ),
+			Fill = new Color( 0.0, 0.0, 0.6, 1.0 ),
+			Size = 20 };
+		
 		q1.Location = new ForceGraph.Point(){ X = 12, Y = 5, Z = 0 };
 		q2.Location = new ForceGraph.Point(){ X = 0, Y = -2, Z = 0 };
 		q3.Location = new ForceGraph.Point(){ X = -4, Y = 13, Z = 5 };
@@ -95,6 +109,14 @@ public partial class MainWindow : Gtk.Window
 	}
 }
 
+
+public class NodeData {
+	public string Label { get; set; }
+	public double Size { get; set; }
+	public Color Stroke { get; set; }
+	public Color Fill { get; set; }
+	public double StrokeSize { get; set; }
+}
 
 public class CairoGraphic : DrawingArea
 {
@@ -164,7 +186,7 @@ public class CairoGraphic : DrawingArea
 		if (ForceGraph != null) {
 			this.GdkWindow.Clear();
 			gr.Antialias = Antialias.Subpixel;
-			foreach (var p in ForceGraph.Springs){
+			foreach (var p in ForceGraph.Springs){			
 				gr.LineWidth = 1.5;
 				gr.Color = new Color( 0,0,0,1);
 				gr.MoveTo( offset + ( p.NodeA.Location.X * mag ), offset + ( p.NodeA.Location.Y * mag ) );
@@ -174,13 +196,35 @@ public class CairoGraphic : DrawingArea
 			}
 			
 			foreach (var n in ForceGraph.Nodes) {
+				var stroke = new Color( 0.1, 0.1, 0.1, 0.8 );
+				var fill   = new Color( 0.2, 0.7, 0.7, 0.8 );
+				var size = 3.5;
+				
+				NodeData nd = n.Data as NodeData;
+				if ( nd != null ){
+					stroke = nd.Stroke;
+					fill = nd.Fill;
+					size = nd.Size;
+					
+					
+				}
+				
 				DrawFilledCircle (gr, 
 					offset + (mag * n.Location.X),
 					offset + (mag * n.Location.Y),
-					5.5,
-					new Color (0.1, 0.1, 0.1),
-					new Color (0.2, 0.5, 0.1)
+					size,
+					stroke,
+					fill
 					);
+				
+				if ( nd != null ) {
+					if ( nd.Label != null ){
+						gr.SetFontSize(24);
+						gr.MoveTo( 25 + offset + (mag * n.Location.X), 25 + offset + (mag * n.Location.Y));
+						gr.ShowText( nd.Label );						
+					}
+				}
+				
 			}
 			
 		}
