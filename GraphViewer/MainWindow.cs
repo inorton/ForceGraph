@@ -39,21 +39,22 @@ public partial class MainWindow : Gtk.Window
 		Node q5 = new Node ();
 		Node q6 = new Node ();
 		Node q7 = new Node ();
-	
+			
 		
 		q1.Charge *= 20;
 		q1.Data = new NodeData(){ 
 			Label = "Root CA Key Group",
-			Stroke = new Color( 0.1, 0.1, 0.1, 1.0 ),
-			Fill = new Color( 0.8, 0.0, 0.0, 1.0 ),
-			Size = 30 };
+			Stroke = new Color( 0.5, 0.5, 0.5, 0.5 ),
+			Fill = new Color( 1, 1, 1, 1 ),
+			Size = 90 };
 		
+
 		q2.Charge *= 9;
 		q2.Data = new NodeData(){ 
 			Label = "Root CA App Group",
-			Stroke = new Color( 0.1, 0.1, 0.1, 1.0 ),
-			Fill = new Color( 0.0, 0.0, 0.6, 1.0 ),
-			Size = 20 };
+			Stroke = new Color( 0.5, 0.5, 0.5, 0.5 ),
+			Fill = new Color( 1, 1, 1, 1 ),
+			Size = 90 };
 		
 		q1.Location = new ForceGraph.Point(){ X = 12, Y = 5, Z = 0 };
 		q2.Location = new ForceGraph.Point(){ X = 0, Y = -2, Z = 0 };
@@ -71,14 +72,16 @@ public partial class MainWindow : Gtk.Window
 		g.AddNode( q6 );
 		g.AddNode( q7 );
 		
-		g.Join( q1, q5 );
-		g.Join( q1, q6 );
-		g.Join( q1, q7 );
+		g.Join( q1, q5 ).Data = new NodeData(){ Stroke = new Color( 0,0,0,0.1 ) };
+		g.Join( q1, q6 ).Data = new NodeData(){ Stroke = new Color( 0,0,0,0.1 ) };
+		g.Join( q1, q7 ).Data = new NodeData(){ Stroke = new Color( 0,0,0,0.1 ) };
 		
 		
-		g.Join( q1, q2 ).NaturalLength = 4;
-		g.Join( q2, q3 );
-		g.Join( q2, q4 );
+		var grant = g.Join( q1, q2 );
+		grant.NaturalLength = 12;
+		
+		g.Join( q2, q3 ).Data = new NodeData(){ Stroke = new Color( 0,0,0,0.1 ) };
+		g.Join( q2, q4 ).Data = new NodeData(){ Stroke = new Color( 0,0,0,0.1 ) };
 		
 		area.ForceGraph = g;
 		area.Magnification = 30;
@@ -260,7 +263,14 @@ public class CairoGraphic : DrawingArea
 			gr.Antialias = Antialias.Subpixel;
 			foreach (var p in ForceGraph.Springs){			
 				gr.LineWidth = 1.5;
-				gr.Color = new Color( 0,0,0,1);
+				
+				if ( p.Data != null ){
+					var data = p.Data as NodeData;
+					if ( data != null )
+						gr.Color = data.Stroke;
+				} else {
+					gr.Color = new Color( 0,0,0,1);
+				}
 				gr.MoveTo( xoffset + ( p.NodeA.Location.X * mag ), yoffset + ( p.NodeA.Location.Y * mag ) );
 				gr.LineTo( xoffset + ( p.NodeB.Location.X * mag ), yoffset + ( p.NodeB.Location.Y * mag ) );
 				gr.Stroke();
@@ -291,6 +301,7 @@ public class CairoGraphic : DrawingArea
 				
 				if ( nd != null ) {
 					if ( nd.Label != null ){
+						gr.Color = new Color(0,0,0,0.7);
 						gr.SetFontSize(24);
 						gr.MoveTo( 25 + xoffset + (mag * n.Location.X), 25 + yoffset + (mag * n.Location.Y));
 						gr.ShowText( nd.Label );						
