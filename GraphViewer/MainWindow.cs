@@ -41,20 +41,20 @@ public partial class MainWindow : Gtk.Window
 		Node q7 = new Node ();
 			
 		
-		q1.Charge *= 20;
+		q1.Charge = 0.1;
 		q1.Data = new NodeData(){ 
-			Label = "Root CA Key Group",
+			Label = "CA KGroup",
 			Stroke = new Color( 0.5, 0.5, 0.5, 0.5 ),
 			Fill = new Color( 1, 1, 1, 1 ),
-			Size = 90 };
+			Size = 60 };
 		
 
-		q2.Charge *= 9;
+		q2.Charge = 0.1;
 		q2.Data = new NodeData(){ 
-			Label = "Root CA App Group",
+			Label = "CA AGroup",
 			Stroke = new Color( 0.5, 0.5, 0.5, 0.5 ),
 			Fill = new Color( 1, 1, 1, 1 ),
-			Size = 90 };
+			Size = 60 };
 		
 		q1.Location = new ForceGraph.Point(){ X = 12, Y = 5, Z = 0 };
 		q2.Location = new ForceGraph.Point(){ X = 0, Y = -2, Z = 0 };
@@ -119,6 +119,10 @@ public partial class MainWindow : Gtk.Window
 			
 			drag.Location.X = x;
 			drag.Location.Y = y;
+			if ( area.ForceGraph.TotalKineticEnergy < 0.001 ){
+				area.ForceGraph.Compute(null);
+				area.QueueDraw();
+			}
 		}
 	}
 
@@ -129,7 +133,7 @@ public partial class MainWindow : Gtk.Window
 			double x = ( args.Event.X + (area.Allocation.Width * -0.5)  )/ area.Magnification;
 			double y = ( args.Event.Y + (area.Allocation.Height * -0.5)  )/ area.Magnification;
 			
-			double size = 1;
+			double size = 0.5;
 			
 			Console.WriteLine( "mouse down {0},{1}", x,y );
 			
@@ -150,8 +154,9 @@ public partial class MainWindow : Gtk.Window
 				}				
 			}
 			
-			if ( drag != null )
+			if ( drag != null ){
 				area.MotionNotifyEvent += HandleAreaMotionNotifyEvent;
+			}
 		}
 	}
 	
@@ -280,7 +285,7 @@ public class CairoGraphic : DrawingArea
 			foreach (var n in ForceGraph.Nodes) {
 				var stroke = new Color( 0.1, 0.1, 0.1, 0.8 );
 				var fill   = new Color( 0.2, 0.7, 0.7, 0.8 );
-				var size = 3.5;
+				var size = 5.5;
 				
 				NodeData nd = n.Data as NodeData;
 				if ( nd != null ){
