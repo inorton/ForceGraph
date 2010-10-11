@@ -57,7 +57,7 @@ namespace Vector3DTest
 			g.AddNode( q1 );
 			g.AddNode( q2 );
 			
-			Node.Join( q1, q2 );
+			g.Join( q1, q2 );
 			
 			int x = 0;
 			double fke = 100;
@@ -96,8 +96,8 @@ namespace Vector3DTest
 			g.AddNode( q2 );
 			g.AddNode( q3 );	
 			
-			Node.Join( q1, q3 );
-			Node.Join( q1, q2 );
+			g.Join( q1, q3 );
+			g.Join( q1, q2 );
 			
 			g.ComputeFull( 0.0001 , null );
 		}

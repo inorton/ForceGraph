@@ -9,7 +9,7 @@ namespace ForceGraph
 
 		public static double CoulombConstant = 9;
 		public static double SpringConstant  = 3;
-
+		public static double SpringNatualLength = 0.10;
 		public static double Damping = 0.4; // slow the graph compute down
 		public static double RestThreshold = 2; // declare the graph done when TotalKineticEnergy is less than this
 		public static double ComputeTimeStep = 0.1; // iterations per second
@@ -17,6 +17,7 @@ namespace ForceGraph
 		public Graph ()
 		{
 			nodes = new List<Node> (10);
+			springs = new List<Spring> (20);
 		}
 		
 		private double totalKE = 100;
@@ -30,6 +31,11 @@ namespace ForceGraph
 			get { return nodes; }
 		}
 		
+		private List<Spring> springs;
+		public IEnumerable<Spring> Springs {
+			get { return springs; }	
+		}
+		
 		
 		public void AddNode (Node node)
 		{
@@ -39,6 +45,21 @@ namespace ForceGraph
 				}
 			}
 			nodes.Add (node);
+		}
+		
+		public Spring Join (Node a, Node b)
+		{
+			Spring p = new Spring () { 
+				NaturalLength = SpringNatualLength,
+				NodeA = a,
+				NodeB = b
+			};
+
+			a.Links.Add( p );
+			b.Links.Add( p );
+			
+			springs.Add( p );
+			return p;
 		}
 		
 		public void ComputeFull (double KEChange, Action<Node> callback )

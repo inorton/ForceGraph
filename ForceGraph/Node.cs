@@ -6,7 +6,7 @@ namespace ForceGraph
 	public class Node
 	{
 		public Guid NodeId { get; private set; }
-		public static double SpringNatualLength = 0.10;
+
 		
 		public Node ()
 		{
@@ -48,19 +48,7 @@ namespace ForceGraph
 			return false;
 		}
 		
-		public static Spring Join (Node a, Node b)
-		{
-			Spring p = new Spring () { 
-				NaturalLength = SpringNatualLength,
-				NodeA = a,
-				NodeB = b
-			};
 
-			a.Links.Add( p );
-			b.Links.Add( p );
-			
-			return p;
-		}
 
 	}
 }
