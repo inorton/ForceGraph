@@ -19,7 +19,7 @@ namespace ForceGraph
 			nodes = new List<Node> (10);
 		}
 		
-		private double totalKE = 0.0;
+		private double totalKE = 100;
 		public double TotalKineticEnergy {
 			get { return totalKE; } 
 		}

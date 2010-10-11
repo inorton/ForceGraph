@@ -8,16 +8,17 @@ using ForceGraph;
 
 public partial class MainWindow : Gtk.Window
 {
+	private CairoGraphic area;
 	
 	public MainWindow () : base(Gtk.WindowType.Toplevel)
 	{
 		Build ();
 		
-		CairoGraphic a = new CairoGraphic ();
+		area = new CairoGraphic ();
 		
 		Box box = new HBox (true, 0);
 		
-		box.Add (a);
+		box.Add (area);
 		
 		this.Add (box);
 		
@@ -42,11 +43,30 @@ public partial class MainWindow : Gtk.Window
 		Node.Join( q1, q2 );
 		Node.Join( q3, q2 );
 		Node.Join( q2, q4 );
-		a.ForceGraph = g;
-
-	}
+		area.ForceGraph = g;
 		
-
+		
+		Thread t = new Thread( new ThreadStart( this.Render) );
+		t.Start();
+	}
+	
+	public void Render()
+	{
+		do {
+			lock ( area.ForceGraph ){
+				if ( area.ForceGraph.TotalKineticEnergy > 0.02 ){
+					area.ForceGraph.Compute( null );
+					
+					Application.Invoke( delegate {
+						using ( var ctx = Gdk.CairoHelper.Create( area.GdkWindow ) ){
+							area.DrawGraph( ctx ); 	
+						}
+					} );
+				}
+			}
+			Thread.Sleep(100);
+		} while ( true );
+	}
 
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
 	{
@@ -110,7 +130,9 @@ public class CairoGraphic : DrawingArea
     protected override bool OnExposeEvent (Gdk.EventExpose args)
     {
     	using (Context g = Gdk.CairoHelper.Create (args.Window)) {
-    		DrawGraph (g);
+			lock ( ForceGraph ){
+    			DrawGraph (g);
+			}
 		}
     	return true;
     }
@@ -118,8 +140,7 @@ public class CairoGraphic : DrawingArea
 	public void DrawGraph (Context gr)
 	{
 		if (ForceGraph != null) {
-			ForceGraph.ComputeFull (0.0001, null);
-			
+			this.GdkWindow.Clear();
 			foreach (var n in ForceGraph.Nodes) {
 				DrawFilledCircle (gr, 
 					100 + (30 * n.Location.X),
