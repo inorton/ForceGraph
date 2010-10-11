@@ -26,6 +26,10 @@ public partial class MainWindow : Gtk.Window
 		
 		
 		Graph g = new Graph ();
+		
+		Graph.CoulombConstant += 5;
+		Graph.SpringConstant += 5;
+		
 		Node q1 = new Node ();
 		Node q2 = new Node ();
 		Node q3 = new Node ();
@@ -65,7 +69,7 @@ public partial class MainWindow : Gtk.Window
 	{
 		do {
 			lock ( area.ForceGraph ){
-				if ( area.ForceGraph.TotalKineticEnergy > 0.01 ){
+				if ( area.ForceGraph.TotalKineticEnergy > 0.0025 ){
 					area.ForceGraph.Compute( null );
 					
 					Application.Invoke( delegate {
