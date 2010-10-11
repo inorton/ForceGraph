@@ -9,6 +9,7 @@ using ForceGraph;
 public partial class MainWindow : Gtk.Window
 {
 	private CairoGraphic area;
+	private Node drag = null;
 	
 	public MainWindow () : base(Gtk.WindowType.Toplevel)
 	{
@@ -28,7 +29,8 @@ public partial class MainWindow : Gtk.Window
 		Graph g = new Graph ();
 		
 		Graph.CoulombConstant += 5;
-		Graph.SpringConstant += 5;
+		Graph.SpringConstant += 15;
+		Graph.Damping = 0.85;
 		
 		Node q1 = new Node (){ Mass = 3 };
 		Node q2 = new Node (){ Mass = 2 };
@@ -37,6 +39,7 @@ public partial class MainWindow : Gtk.Window
 		Node q5 = new Node ();
 		Node q6 = new Node ();
 		Node q7 = new Node ();
+	
 		
 		q1.Charge *= 20;
 		q1.Data = new NodeData(){ 
@@ -78,11 +81,78 @@ public partial class MainWindow : Gtk.Window
 		g.Join( q2, q4 );
 		
 		area.ForceGraph = g;
+		area.Magnification = 30;
 		
+				
 		
 		Thread t = new Thread( new ThreadStart( this.Render) );
 		t.Start();
+		
+		area.AddEvents( (int) Gdk.EventMask.ButtonPressMask );
+		area.AddEvents( (int) Gdk.EventMask.ButtonReleaseMask );
+		area.AddEvents( (int) Gdk.EventMask.Button1MotionMask );
+		area.Sensitive = true;
+
+		area.ButtonPressEvent += HandleHandleButtonPressEvent;
+		area.ButtonReleaseEvent += HandleAreaButtonReleaseEvent;
+		
 	}
+
+	void HandleAreaButtonReleaseEvent (object o, ButtonReleaseEventArgs args)
+	{
+		if (args.Event.Button == 1) {
+			Console.WriteLine("mouse up");
+			area.MotionNotifyEvent -= HandleAreaMotionNotifyEvent;
+			drag = null;
+		}
+	}
+
+	void HandleAreaMotionNotifyEvent (object o, MotionNotifyEventArgs args)
+	{
+		if ( drag != null ){
+			Console.WriteLine("move");
+			double x = ( args.Event.X + (area.Allocation.Width * -0.5)  )/ area.Magnification;
+			double y = ( args.Event.Y + (area.Allocation.Height * -0.5)  )/ area.Magnification;
+			
+			drag.Location.X = x;
+			drag.Location.Y = y;
+		}
+	}
+
+	void HandleHandleButtonPressEvent (object o, ButtonPressEventArgs args)
+	{
+		if (drag != null ) return;
+		if (args.Event.Button == 1) {
+			double x = ( args.Event.X + (area.Allocation.Width * -0.5)  )/ area.Magnification;
+			double y = ( args.Event.Y + (area.Allocation.Height * -0.5)  )/ area.Magnification;
+			
+			double size = 1;
+			
+			Console.WriteLine( "mouse down {0},{1}", x,y );
+			
+			foreach ( var n in area.ForceGraph.Nodes ){
+				double minx = n.Location.X - size;
+				if ( x > minx ){
+					double maxx = n.Location.X + size;
+					if ( x < maxx ){
+						double miny = n.Location.Y - size;
+						if ( y > miny ){
+							double maxy = n.Location.Y + size;
+							if ( y < maxy ){
+								drag = n;
+								break;
+							}
+						}
+					}
+				}				
+			}
+			
+			if ( drag != null )
+				area.MotionNotifyEvent += HandleAreaMotionNotifyEvent;
+		}
+	}
+	
+
 	
 	public void Render ()
 	{
@@ -118,6 +188,8 @@ public class NodeData {
 
 public class CairoGraphic : DrawingArea
 {
+	
+	public int Magnification { get; set; }
 	
 	public Graph ForceGraph { get; set; }
 	
@@ -179,9 +251,9 @@ public class CairoGraphic : DrawingArea
 	
 	public void DrawGraph (Context gr)
 	{
-		int mag = 30;
-		double xoffset = (this.Allocation.Width / 2) - ( 0.5 * ForceGraph.Width );
-		double yoffset = (this.Allocation.Height / 2) - ( 0.5 * ForceGraph.Height );
+		int mag = Magnification;
+		double xoffset =  (Allocation.Width/2) ;
+		double yoffset =  (Allocation.Height/2) ;
 		
 		if (ForceGraph != null) {
 			this.GdkWindow.Clear ();

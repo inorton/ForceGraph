@@ -157,7 +157,7 @@ namespace ForceGraph
 				}
 			}
 			
-			Console.WriteLine("KE = {0}",totalKE);
+			
 		}
 		
 		
