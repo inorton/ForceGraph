@@ -3,10 +3,6 @@
 
 public partial class MainWindow
 {
-	private global::Gtk.Table table1;
-
-	private global::Gtk.DrawingArea drawingarea1;
-
 	protected virtual void Build ()
 	{
 		global::Stetic.Gui.Initialize (this);
@@ -14,16 +10,6 @@ public partial class MainWindow
 		this.Name = "MainWindow";
 		this.Title = global::Mono.Unix.Catalog.GetString ("MainWindow");
 		this.WindowPosition = ((global::Gtk.WindowPosition)(4));
-		// Container child MainWindow.Gtk.Container+ContainerChild
-		this.table1 = new global::Gtk.Table (((uint)(2)), ((uint)(2)), false);
-		this.table1.Name = "table1";
-		this.table1.RowSpacing = ((uint)(6));
-		this.table1.ColumnSpacing = ((uint)(6));
-		// Container child table1.Gtk.Table+TableChild
-		this.drawingarea1 = new global::Gtk.DrawingArea ();
-		this.drawingarea1.Name = "drawingarea1";
-		this.table1.Add (this.drawingarea1);
-		this.Add (this.table1);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();
 		}
