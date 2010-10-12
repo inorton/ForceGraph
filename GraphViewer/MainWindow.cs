@@ -28,9 +28,9 @@ public partial class MainWindow : Gtk.Window
 		
 		Graph g = new Graph ();
 		
-		Graph.CoulombConstant += 5;
-		Graph.SpringConstant += 15;
-		Graph.Damping = 0.85;
+		Graph.CoulombConstant += 15;
+		Graph.SpringConstant += 25;
+		Graph.Damping = 0.8;
 		
 		Node q1 = new Node (){ Mass = 3 };
 		Node q2 = new Node (){ Mass = 2 };
@@ -41,7 +41,7 @@ public partial class MainWindow : Gtk.Window
 		Node q7 = new Node ();
 			
 		
-		q1.Charge = 0.1;
+		q1.Charge = 1.5;
 		q1.Data = new NodeData(){ 
 			Label = "CA KGroup",
 			Stroke = new Color( 0.5, 0.5, 0.5, 0.5 ),
@@ -49,7 +49,7 @@ public partial class MainWindow : Gtk.Window
 			Size = 60 };
 		
 
-		q2.Charge = 0.1;
+		q2.Charge = 1.5;
 		q2.Data = new NodeData(){ 
 			Label = "CA AGroup",
 			Stroke = new Color( 0.5, 0.5, 0.5, 0.5 ),
@@ -119,10 +119,10 @@ public partial class MainWindow : Gtk.Window
 			
 			drag.Location.X = x;
 			drag.Location.Y = y;
-			if ( area.ForceGraph.TotalKineticEnergy < 0.001 ){
-				area.ForceGraph.Compute(null);
-				area.QueueDraw();
-			}
+			
+			area.ForceGraph.Compute(null);
+			area.QueueDraw();
+			
 		}
 	}
 
