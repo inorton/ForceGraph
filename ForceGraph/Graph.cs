@@ -60,15 +60,14 @@ namespace ForceGraph
 		
 		
 		private List<Node> nodes;
-		public IEnumerable<Node> Nodes {
+		public List<Node> Nodes {
 			get { return nodes; }
 		}
 		
 		private List<Spring> springs;
-		public IEnumerable<Spring> Springs {
+		public List<Spring> Springs {
 			get { return springs; }	
 		}
-		
 		
 		public void AddNode (Node node)
 		{

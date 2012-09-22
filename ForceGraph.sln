@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForceGraph", "ForceGraph\ForceGraph.csproj", "{E0D17ECC-C3BE-4E97-95DB-08EAC1346024}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vector3DTest", "Vector3DTest\Vector3DTest.csproj", "{B34C303A-753A-4761-B26E-FFB92411E4F1}"
